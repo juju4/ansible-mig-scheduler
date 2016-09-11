@@ -1,0 +1,7 @@
+---
+
+- include: server.yml
+
+- include: rabbitmq-certificates-push.yml
+  when: mig_rabbitmqcert_push is defined and mig_rabbitmqcert_push
+

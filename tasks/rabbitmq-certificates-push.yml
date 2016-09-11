@@ -1,0 +1,11 @@
+---
+
+- name: push rabbitmq scheduler certificate on scheduler server
+  copy: src="tmp/{{ item }}" dest="/etc/mig" mode=0400 owner="{{ mig_user }}"
+  with_items:
+    - ca.crt
+    - scheduler.key
+    - scheduler.crt
+  notify:
+    - restart supervisor
+

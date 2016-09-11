@@ -1,0 +1,70 @@
+---
+
+- name: Ensure mig configuration dir exists
+  file: "dest=/etc/mig state=directory mode=0750 owner=root group={{ mig_user }}"
+  become: yes
+
+- stat: path="/etc/mig/scheduler.cfg"
+  register: schedulercfg
+- name: Set Scheduler configuration
+  command: "rsync -ci {{ mig_src }}/conf/scheduler.cfg.inc /etc/mig/scheduler.cfg"
+  register: rsync_result
+  changed_when: 'rsync_result.stdout != ""'
+  when: not schedulercfg.stat.exists
+
+- name: update scheduler configuration
+#  replace: dest="/etc/mig/scheduler.cfg" regexp="{{ item.re }}" replace="{{ item.rep }}"
+#  with_items:
+#    - { re: 'password = "123456"', rep: 'password = "{{ mig_db_migscheduler_pass }}"' }
+#    - { re: 'user  = "guest"', rep: 'user  = "scheduler"' }
+#    - { re: 'pass  = "guest"', rep: 'pass  = "{{ mig_rabbitmq_schedpass }}"' }
+### either be populated, either disable it
+#    - { re: '(\s+)whitelist = ', rep: '\1;whitelist = ' }
+##    - { re: '^;   usetls  = true', rep: '   usetls  = true' }
+#    - { re: '^;   cacert  = "/path/to/cacert.pem"', rep: '   cacert  = "/etc/mig/ca.crt"' }
+#    - { re: '^;   tlscert = "/path/to/cert.pem"', rep: '   tlscert  = "/etc/mig/scheduler.crt"' }
+#    - { re: '^;   tlskey  = "/path/to/key.pem"', rep: '   tlskey  = "/etc/mig/scheduler.key"' }
+  ini_file: dest=/etc/mig/scheduler.cfg section="{{ item.s }}" option="{{ item.o }}" value="{{ item.v }}" state="{{ item.st }}" mode=0440 owner="{{ mig_user }}" backup=yes
+  with_items:
+    - { s: 'agent', o: 'whitelist', v: '', st: absent }
+    - { s: 'postgres', o: 'host', v: "{{ mig_db_host }}", st: present }
+    - { s: 'postgres', o: 'port', v: "{{ mig_db_port }}", st: present }
+    - { s: 'postgres', o: 'password', v: "{{ mig_db_migapi_pass }}", st: present }
+    - { s: 'mq', o: 'host', v: "{{ mig_rabbitmq_host }}", st: present }
+    - { s: 'mq', o: 'port', v: "{{ mig_rabbitmq_port }}", st: present }
+    - { s: 'mq', o: 'user', v: 'scheduler', st: present }
+    - { s: 'mq', o: 'pass', v: "{{ mig_rabbitmq_schedpass }}", st: present }
+    - { s: 'mq', o: 'cacert', v: "/etc/mig/ca.crt", st: present }
+    - { s: 'mq', o: 'tlscert', v: '/etc/mig/scheduler.crt', st: present }
+    - { s: 'mq', o: 'tlskey', v: '/etc/mig/scheduler.key', st: present }
+  become: yes
+  notify:
+    - restart supervisor
+- name: update scheduler configuration - no ssl
+  ini_file: dest=/etc/mig/scheduler.cfg section="mq" option="usetls" value="false" state="present" mode=0440 owner="{{ mig_user }}" backup=yes
+  become: yes
+  notify:
+    - restart supervisor
+  when: mig_rabbitmq_port is not defined or mig_rabbitmq_port != 5671
+- name: update scheduler configuration - ssl
+  ini_file: dest=/etc/mig/scheduler.cfg section="mq" option="usetls" value="true" state="present" mode=0440 owner="{{ mig_user }}" backup=yes
+  become: yes
+  notify:
+    - restart supervisor
+  when: mig_rabbitmq_port is defined and mig_rabbitmq_port == 5671
+
+- name: check config permissions
+  file: "dest={{ item }} state=file mode=0440 owner={{ mig_user }} group=root"
+  with_items:
+    - /etc/mig/scheduler.cfg
+
+- name: set supervisor config to manage MIG daemons
+  template: src=supervisord-scheduler.ini.j2 dest={{ supervisor_confdir }}/supervisord-scheduler.{{ supervisor_ext }} mode=0644
+  become: yes
+  notify:
+    - restart supervisor
+
+- name: Ensure supervisor is enabled and started
+  service: name="{{ supervisor_service }}" state=started enabled=yes
+  become: yes
+

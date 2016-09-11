@@ -1,0 +1,8 @@
+---
+
+- hosts: all
+#  vars:
+#    - mig_user: mig
+  roles:
+    - mig-scheduler
+
