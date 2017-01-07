@@ -4,5 +4,5 @@
 #  vars:
 #    - mig_user: mig
   roles:
-    - mig-scheduler
+    - juju4.mig-scheduler
 
