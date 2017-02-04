@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/juju4/ansible-mig-scheduler.svg?branch=master)](https://travis-ci.org/juju4/ansible-mig-scheduler)
+[![Build Status - Master](https://travis-ci.org/juju4/ansible-mig-scheduler.svg?branch=master)](https://travis-ci.org/juju4/ansible-mig-scheduler)
+[![Build Status - Devel](https://travis-ci.org/juju4/ansible-mig-scheduler.svg?branch=devel)](https://travis-ci.org/juju4/ansible-mig-scheduler/branches)
 
 # MIG ansible role: mig-scheduler service
 
@@ -11,10 +12,11 @@ http://mig.mozilla.org/
 ### Ansible
 It was tested on the following versions:
  * 2.0
+ * 2.2
 
 ### Operating systems
 
-Tested with vagrant on Ubuntu 14.04, Kitchen test with xenial, trusty and centos7
+Ubuntu 14.04, 16.04 and Centos7
 
 ## Example Playbook
 
@@ -59,14 +61,14 @@ Default kitchen config (.kitchen.yml) is lxd-based, while (.kitchen.vagrant.yml)
 Once you ensured all necessary roles are present, You can test with:
 ```
 $ gem install kitchen-ansible kitchen-lxd_cli kitchen-sync kitchen-vagrant
-$ cd /path/to/roles/mig-scheduler
+$ cd /path/to/roles/juju4.mig-scheduler
 $ kitchen verify
 $ kitchen login
 $ KITCHEN_YAML=".kitchen.vagrant.yml" kitchen verify
 ```
 or
 ```
-$ cd /path/to/roles/mig-scheduler/test/vagrant
+$ cd /path/to/roles/juju4.mig-scheduler/test/vagrant
 $ vagrant up
 $ vagrant ssh
 ```
@@ -166,6 +168,4 @@ check Alternate Names for openssl are filled
 ## License
 
 BSD 2-clause
-
-
 
