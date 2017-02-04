@@ -5,6 +5,7 @@
   with_items:
     - git
     - make
+    - gcc
     - libreadline-dev
     - mercurial
     - python-psycopg2
