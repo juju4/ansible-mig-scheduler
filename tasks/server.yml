@@ -11,10 +11,6 @@
   become: yes
   when: ansible_os_family == "RedHat" or ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
-- include: golang.yml
-  become: yes
-  when: not go_installed.stat.exists
-
 - debug: var=mig_user
 - fail: msg="mig_user is not defined or empty!"
   when: mig_user is not defined or mig_user == ''
