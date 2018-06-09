@@ -7,9 +7,10 @@
 - stat: path="/etc/mig/scheduler.cfg"
   register: schedulercfg
 - name: Set Scheduler configuration
-  command: "rsync -ci {{ mig_src }}/conf/scheduler.cfg.inc /etc/mig/scheduler.cfg"
-  register: rsync_result
-  changed_when: 'rsync_result.stdout != ""'
+  copy:
+    src: "{{ mig_src }}/conf/scheduler.cfg.inc"
+    dest: /etc/mig/scheduler.cfg
+    mode: '0644'
   when: not schedulercfg.stat.exists
 
 - name: update scheduler configuration
