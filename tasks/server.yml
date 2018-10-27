@@ -1,7 +1,4 @@
 ---
-- name: Check to see if specified Go version is already installed
-  stat: path=/usr/local/go-{{ mig_gover }}
-  register: go_installed
 
 - include: debian.yml
   become: yes
