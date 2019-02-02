@@ -129,7 +129,7 @@
 - include: server-scheduler.yml
   when: >
     mig_server_roles is defined and
-(mig_server_roles == 'all' or mig_server_roles == 'scheduler')
+    (mig_server_roles == 'all' or mig_server_roles == 'scheduler')
 
 - name: Ensure nrpe.d dir exists
   file: dest=/etc/nagios/nrpe.d state=directory mode=0755
