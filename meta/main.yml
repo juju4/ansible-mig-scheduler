@@ -1,5 +1,6 @@
 ---
 galaxy_info:
+  role_name: mig-scheduler
   author: juju4
   description: Mozilla Investi Gator - Scheduler server
   license: BSD
@@ -28,5 +29,5 @@ galaxy_info:
   - web
   - security
 dependencies:
-  - juju4.redhat-epel
+  - juju4.redhat_epel
   - juju4.golang

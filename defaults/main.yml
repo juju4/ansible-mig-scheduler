@@ -90,4 +90,3 @@ mig_rabbitmqcert_push: false
 mig_rabbitmqcert_ca: tmp/ca.crt
 mig_rabbitmqcert_schedkey: tmp/scheduler.key
 mig_rabbitmqcert_schedcrt: tmp/scheduler.crt
-

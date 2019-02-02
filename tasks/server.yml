@@ -6,11 +6,11 @@
 
 - include: redhat.yml
   become: yes
-  when: ansible_os_family == "RedHat" or ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  when: ansible_os_family == "RedHat"
 
 - debug: var=mig_user
 - fail: msg="mig_user is not defined or empty!"
-  when: mig_user is not defined or mig_user == ''
+  when: mig_user is not defined or not mig_user
 
 - set_fact:
     mig_home: '/root'
@@ -67,7 +67,7 @@
 #    - "go get mig.ninja/mig"
     - go get github.com/mozilla/mig
     - go get github.com/mozilla/gozdef
-    - "go get mig.ninja/mig/client/mig-agent-search"
+#    - "go get mig.ninja/mig/client/mig-agent-search"
 #    - "go get code.google.com/p/winsvc/eventlog"
 #    - "go get github.com/golang/sys/tree/master/windows/svc/eventlog"   ## NOK/FIXME!
     - "go get github.com/mozilla/masche/cresponse"
@@ -127,7 +127,9 @@
 - file: dest=/var/cache/mig owner={{ mig_user }} mode=0755 state=directory
 
 - include: server-scheduler.yml
-  when: mig_server_roles is defined and (mig_server_roles == 'all' or mig_server_roles == 'scheduler')
+  when: >
+    mig_server_roles is defined and
+(mig_server_roles == 'all' or mig_server_roles == 'scheduler')
 
 - name: Ensure nrpe.d dir exists
   file: dest=/etc/nagios/nrpe.d state=directory mode=0755
@@ -139,4 +141,3 @@
 - name: Ensure mig configuration dir exists
   file: "dest=/etc/mig state=directory mode=0750 owner=root group={{ mig_user }}"
   become: yes
-

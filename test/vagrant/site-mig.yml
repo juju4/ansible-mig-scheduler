@@ -2,5 +2,4 @@
 
 - hosts: all
   roles:
-    - mig-scheduler
-
+    - juju4.mig-scheduler

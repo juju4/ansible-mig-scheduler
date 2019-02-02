@@ -25,7 +25,15 @@
 #    - { re: '^;   cacert  = "/path/to/cacert.pem"', rep: '   cacert  = "/etc/mig/ca.crt"' }
 #    - { re: '^;   tlscert = "/path/to/cert.pem"', rep: '   tlscert  = "/etc/mig/scheduler.crt"' }
 #    - { re: '^;   tlskey  = "/path/to/key.pem"', rep: '   tlskey  = "/etc/mig/scheduler.key"' }
-  ini_file: dest=/etc/mig/scheduler.cfg section="{{ item.s }}" option="{{ item.o }}" value="{{ item.v }}" state="{{ item.st }}" mode=0440 owner="{{ mig_user }}" backup=yes
+  ini_file:
+    dest: /etc/mig/scheduler.cfg
+    section: "{{ item.s }}"
+    option: "{{ item.o }}"
+    value: "{{ item.v }}"
+    state: "{{ item.st }}"
+    mode: '0440'
+    owner: "{{ mig_user }}"
+    backup: yes
   with_items:
     - { s: 'agent', o: 'whitelist', v: '', st: absent }
     - { s: 'postgres', o: 'host', v: "{{ mig_db_host }}", st: present }
@@ -42,13 +50,29 @@
   notify:
     - restart supervisor
 - name: update scheduler configuration - no ssl
-  ini_file: dest=/etc/mig/scheduler.cfg section="mq" option="usetls" value="false" state="present" mode=0440 owner="{{ mig_user }}" backup=yes
+  ini_file:
+    dest: /etc/mig/scheduler.cfg
+    section: "mq"
+    option: "usetls"
+    value: "false"
+    state: "present"
+    mode: '0440'
+    owner: "{{ mig_user }}"
+    backup: yes
   become: yes
   notify:
     - restart supervisor
   when: mig_rabbitmq_port is not defined or mig_rabbitmq_port != 5671
 - name: update scheduler configuration - ssl
-  ini_file: dest=/etc/mig/scheduler.cfg section="mq" option="usetls" value="true" state="present" mode=0440 owner="{{ mig_user }}" backup=yes
+  ini_file:
+    dest: /etc/mig/scheduler.cfg
+    section: "mq"
+    option: "usetls"
+    value: "true"
+    state: "present"
+    mode: '0440'
+    owner: "{{ mig_user }}"
+    backup: yes
   become: yes
   notify:
     - restart supervisor
@@ -60,7 +84,10 @@
     - /etc/mig/scheduler.cfg
 
 - name: set supervisor config to manage MIG daemons
-  template: src=supervisord-scheduler.ini.j2 dest={{ supervisor_confdir }}/supervisord-scheduler.{{ supervisor_ext }} mode=0644
+  template:
+    src: supervisord-scheduler.ini.j2
+    dest: "{{ supervisor_confdir }}/supervisord-scheduler.{{ supervisor_ext }}"
+    mode: '0644'
   become: yes
   notify:
     - restart supervisor
@@ -68,4 +95,3 @@
 - name: Ensure supervisor is enabled and started
   service: name="{{ supervisor_service }}" state=started enabled=yes
   become: yes
-
